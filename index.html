@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#27506b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PSX Desk">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>PSX Desk</title>
+<style>
+:root{
+  --bg:#edf1f3; --panel:#ffffff; --ink:#16242c; --muted:#5b6d78; --line:#d3dce1;
+  --up:#0e7a4f; --down:#b42318; --flat:#8a98a1; --accent:#27506b; --accent-ink:#ffffff; --hl:#fff3c4;
+  box-sizing:border-box;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10181d; --panel:#18232a; --ink:#e4ecf0; --muted:#8fa2ad; --line:#2a3a43;
+    --up:#3ecf8e; --down:#ff7a6b; --flat:#6f828d; --accent:#6aa6cc; --accent-ink:#10181d; --hl:#3b3516;
+  }
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font:15px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif;font-variant-numeric:tabular-nums}
+h1,h2,h3{font-family:"Palatino Linotype",Palatino,Georgia,serif;font-weight:600;margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+header.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
+header.top h1{font-size:28px;letter-spacing:.2px}
+.meta{color:var(--muted);font-size:13px}
+button,.btn,select,input{font:inherit;color:var(--ink)}
+button,.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:6px;padding:8px 12px;cursor:pointer;display:inline-block}
+button.ghost,.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible,.btn:focus-within,th button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input,select{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 10px;min-width:0}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:14px}
+nav.tabs button{background:transparent;color:var(--muted);border-radius:6px 6px 0 0;padding:10px 14px;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);box-shadow:inset 0 -3px 0 var(--accent);font-weight:600}
+.panel{display:none}.panel.on{display:block}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.tools input[type=search]{flex:1 1 180px}
+.seg{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{background:var(--panel);color:var(--muted);border-radius:0;padding:8px 12px}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+.scroll{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;min-width:560px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;background:var(--panel)}
+th button{all:unset;cursor:pointer;color:inherit;font-weight:600}
+tr:last-child td{border-bottom:0}
+td.txt{text-align:left;white-space:normal;min-width:140px}
+.up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--flat)}
+tr.hl td{background:var(--hl)}
+.breadth{margin:4px 0 14px}
+.bar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--line)}
+.bar i{display:block;height:100%}
+.bar .a{background:var(--up)}.bar .u{background:var(--flat)}.bar .d{background:var(--down)}
+.breadth p{margin:6px 0 0;font-size:13px;color:var(--muted)}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:10px}
+.summary div{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.summary small{display:block;color:var(--muted);font-size:12px}
+.summary b{font-size:19px;font-weight:600}
+.empty{color:var(--muted);padding:14px}
+.notice{background:var(--panel);border:1px dashed var(--line);border-radius:8px;padding:16px;color:var(--muted)}
+.notice code{background:var(--bg);padding:1px 5px;border-radius:4px}
+h3{font-size:18px;margin:20px 0 8px}
+a{color:var(--accent)}
+.x{background:transparent;color:var(--down);padding:2px 8px}
+footer{margin:24px 0 8px;color:var(--muted);font-size:12px}
+.wrap{padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+nav.tabs{position:sticky;top:0;background:var(--bg);z-index:5}
+@media (max-width:600px){
+  header.top h1{font-size:24px}.wrap{padding-left:12px;padding-right:12px}
+  .hide-sm{display:none}
+  #mtable table,#pftable table{min-width:0}
+  th,td{padding:10px 8px}
+  .seg{width:100%}.seg button{flex:1;padding:10px 4px}
+  #msec{flex:1 1 100%}
+  button,.btn,input,select{min-height:44px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>PSX Desk</h1>
+      <div class="meta" id="status">No data loaded</div>
+    </div>
+    <div class="tools" style="margin:0">
+      <label class="btn">Choose data.json<input id="file" type="file" accept=".json,application/json" hidden></label>
+      <button class="ghost" id="reload" type="button">Reload</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" id="tabs">
+    <button role="tab" data-t="market" aria-selected="true">Market</button>
+    <button role="tab" data-t="portfolio" aria-selected="false">My portfolio</button>
+    <button role="tab" data-t="dividends" aria-selected="false">Dividends</button>
+    <button role="tab" data-t="announcements" aria-selected="false">Announcements</button>
+    <button role="tab" data-t="data" aria-selected="false">All data</button>
+  </nav>
+
+  <section class="panel on" id="p-market">
+    <div class="breadth" id="breadth"></div>
+    <div class="tools">
+      <input id="mq" type="search" placeholder="Search symbol" aria-label="Search symbol">
+      <select id="msec" aria-label="Sector"></select>
+      <div class="seg" id="mmode">
+        <button type="button" data-m="all" class="on">All</button>
+        <button type="button" data-m="up">Gainers</button>
+        <button type="button" data-m="down">Losers</button>
+        <button type="button" data-m="vol">Most traded</button>
+      </div>
+    </div>
+    <div class="scroll" id="mtable"></div>
+  </section>
+
+  <section class="panel" id="p-portfolio">
+    <div class="summary" id="pfsum"></div>
+    <div class="tools">
+      <input id="pfs" list="syms" placeholder="Symbol" aria-label="Symbol" style="width:120px">
+      <datalist id="syms"></datalist>
+      <input id="pfq" type="number" min="0" step="1" placeholder="Quantity" aria-label="Quantity" style="width:120px">
+      <input id="pfa" type="number" min="0" step="0.01" placeholder="Average cost" aria-label="Average cost" style="width:140px">
+      <button id="pfadd" type="button">Add holding</button>
+    </div>
+    <div class="scroll" id="pftable"></div>
+    <div class="tools">
+      <button class="ghost" id="pfexp" type="button">Export backup</button>
+      <label class="btn ghost">Import backup<input id="pfimp" type="file" accept=".json,application/json" hidden></label>
+    </div>
+    <h3>Dividends and book closures for your holdings</h3>
+    <div id="pfdiv"></div>
+    <h3>Announcements for your holdings</h3>
+    <div id="pfann"></div>
+  </section>
+
+  <section class="panel" id="p-dividends">
+    <div class="tools"><input id="dq" type="search" placeholder="Filter dividends" aria-label="Filter dividends"></div>
+    <div id="dtable"></div>
+  </section>
+
+  <section class="panel" id="p-announcements">
+    <div class="tools"><input id="aq" type="search" placeholder="Filter announcements" aria-label="Filter announcements"></div>
+    <div id="atable"></div>
+  </section>
+
+  <section class="panel" id="p-data">
+    <div class="tools">
+      <select id="dpage" aria-label="Page"></select>
+      <input id="dpq" type="search" placeholder="Filter rows" aria-label="Filter rows">
+    </div>
+    <div id="dpout"></div>
+  </section>
+
+  <footer>Data comes from the public PSX Data Portal and may be delayed. For personal research only. This is not investment advice. Your portfolio is stored only in this browser; use Export backup to keep a copy.</footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s);};
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+var num=function(v){var n=parseFloat(String(v==null?'':v).replace(/,/g,'').replace(/[^0-9.\-]/g,''));return isNaN(n)?null:n;};
+var fmt=function(n,d){if(d===undefined)d=2;return n==null?'-':n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});};
+var cls=function(n){return n>0?'up':(n<0?'down':'flat');};
+var store={
+  get:function(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}},
+  set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+};
+var LS_DATA='psxdesk:data', LS_PF='psxdesk:portfolio';
+
+var DATA=null;
+var PF=store.get(LS_PF)||[];
+var mkt={q:'',sector:'',mode:'all',sort:'vol',dir:-1};
+var cache={rows:null};
+
+/* ---------- data helpers ---------- */
+function pageTables(name){return (DATA&&DATA.pages&&DATA.pages[name]&&DATA.pages[name].tables)||[];}
+function holdSet(){var s={};PF.forEach(function(h){s[h.sym]=1;});return s;}
+
+function marketRows(){
+  if(cache.rows)return cache.rows;
+  var out=[];
+  pageTables('market-watch').forEach(function(t){
+    var h=t.headers.map(function(x){return x.toLowerCase();});
+    var find=function(re){for(var i=0;i<h.length;i++){if(re.test(h[i]))return i;}return -1;};
+    var si=find(/symbol/), pi=find(/^current|^price|^last/);
+    if(si<0||pi<0)return;
+    var sec=find(/sector/), ci=find(/^change$/), cp=find(/%/), vi=find(/volume/),
+        hi=find(/^high/), lo=find(/^low/), ld=find(/ldcp|prev/);
+    t.rows.forEach(function(r){
+      var sym=String(r[si]||'').trim().split(/\s+/)[0].toUpperCase();
+      if(!sym)return;
+      var price=num(r[pi]), chg=ci>=0?num(r[ci]):null, pct=cp>=0?num(r[cp]):null;
+      var ldcp=ld>=0?num(r[ld]):null;
+      if(pct==null&&chg!=null&&ldcp)pct=chg/ldcp*100;
+      if(chg==null&&pct!=null&&ldcp)chg=ldcp*pct/100;
+      out.push({sym:sym,sector:sec>=0?r[sec]:'',price:price,chg:chg,pct:pct,
+        vol:vi>=0?num(r[vi]):null,high:hi>=0?num(r[hi]):null,low:lo>=0?num(r[lo]):null});
+    });
+  });
+  cache.rows=out;return out;
+}
+
+/* ---------- generic table ---------- */
+function tableHtml(t,filter,hl){
+  var idx=[];
+  t.rows.forEach(function(r,i){if(!filter||filter(r))idx.push(i);});
+  if(!idx.length)return '<p class="empty">No matching rows.</p>';
+  var hasLinks=(t.row_links||[]).some(function(l){return l&&l.length;});
+  var head=t.headers.map(function(x){return '<th>'+esc(x)+'</th>';}).join('')+(hasLinks?'<th></th>':'');
+  var body=idx.map(function(i){
+    var r=t.rows[i], mark=hl&&hl(r)?' class="hl"':'';
+    var cells=r.map(function(c,ci){return '<td'+(ci>0&&c.length>24?' class="txt"':'')+'>'+esc(c)+'</td>';}).join('');
+    var link='';
+    if(hasLinks){
+      var u=(t.row_links[i]||[]).filter(function(x){return /^https?:\/\//.test(x);})[0];
+      link='<td>'+(u?'<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Open</a>':'')+'</td>';
+    }
+    return '<tr'+mark+'>'+cells+link+'</tr>';
+  }).join('');
+  return '<div class="scroll"><table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></div>';
+}
+function rowMatches(r,q){if(!q)return true;q=q.toLowerCase();return r.some(function(c){return String(c).toLowerCase().indexOf(q)>=0;});}
+function rowHasHolding(r,set){return r.some(function(c){return String(c).toUpperCase().split(/[^A-Z0-9]+/).some(function(tok){return tok&&set[tok];});});}
+function pageHtml(name,q,onlyHeld){
+  var tabs=pageTables(name);
+  if(!tabs.length)return noData(name);
+  var set=holdSet();
+  var parts=tabs.map(function(t){
+    return tableHtml(t,function(r){return rowMatches(r,q)&&(!onlyHeld||rowHasHolding(r,set));},function(r){return rowHasHolding(r,set);});
+  });
+  return parts.join('<div style="height:12px"></div>');
+}
+function noData(name){
+  var p=DATA&&DATA.pages&&DATA.pages[name];
+  if(p&&p.text_preview)return '<div class="notice">The <code>'+esc(name)+'</code> page had no tables (it may be rendered by JavaScript). Check the log from <code>psx_fetch.py</code> and adjust the path.</div>';
+  return '<div class="notice">No <code>'+esc(name)+'</code> data yet. Run <code>python psx_fetch.py</code>, then choose the new <code>data.json</code> above.</div>';
+}
+
+/* ---------- Market ---------- */
+function renderMarket(){
+  var rows=marketRows();
+  if(!rows.length){
+    $('#breadth').innerHTML='';
+    $('#mtable').innerHTML=noData('market-watch');
+    return;
+  }
+  var up=0,dn=0,fl=0;
+  rows.forEach(function(r){if(r.pct>0)up++;else if(r.pct<0)dn++;else fl++;});
+  var tot=rows.length;
+  $('#breadth').innerHTML='<div class="bar" role="img" aria-label="'+up+' up, '+dn+' down, '+fl+' unchanged">'+
+    '<i class="a" style="width:'+(up/tot*100)+'%"></i><i class="u" style="width:'+(fl/tot*100)+'%"></i><i class="d" style="width:'+(dn/tot*100)+'%"></i></div>'+
+    '<p>'+up+' rising, '+fl+' unchanged, '+dn+' falling across '+tot+' symbols</p>';
+
+  var secs={};rows.forEach(function(r){if(r.sector)secs[r.sector]=1;});
+  var sel=$('#msec'),cur=mkt.sector;
+  sel.innerHTML='<option value="">All sectors</option>'+Object.keys(secs).sort().map(function(s){return '<option>'+esc(s)+'</option>';}).join('');
+  sel.value=cur;
+  $('#syms').innerHTML=rows.map(function(r){return '<option value="'+esc(r.sym)+'">';}).join('');
+  updateMarketTable();
+}
+function updateMarketTable(){
+  var rows=marketRows().filter(function(r){
+    if(mkt.q&&r.sym.indexOf(mkt.q.toUpperCase())<0)return false;
+    if(mkt.sector&&r.sector!==mkt.sector)return false;
+    if(mkt.mode==='up'&&!(r.pct>0))return false;
+    if(mkt.mode==='down'&&!(r.pct<0))return false;
+    return true;
+  });
+  var key=mkt.sort,dir=mkt.dir;
+  if(mkt.mode==='up'){key='pct';dir=-1;}else if(mkt.mode==='down'){key='pct';dir=1;}else if(mkt.mode==='vol'){key='vol';dir=-1;}
+  rows.sort(function(a,b){
+    var x=a[key],y=b[key];
+    if(typeof x==='string'||typeof y==='string')return String(x||'').localeCompare(String(y||''))*dir;
+    x=x==null?-Infinity:x;y=y==null?-Infinity:y;return (x-y)*dir;
+  });
+  if(!rows.length){$('#mtable').innerHTML='<p class="empty">No symbols match.</p>';return;}
+  var cols=[['sym','Symbol'],['price','Last'],['chg','Change'],['pct','Change %'],['vol','Volume'],['high','High'],['low','Low']];
+  var head=cols.map(function(c){return '<th'+(c[0]==='high'||c[0]==='low'||c[0]==='vol'?' class="hide-sm"':'')+'><button type="button" data-k="'+c[0]+'">'+c[1]+(mkt.sort===c[0]&&mkt.mode==='all'?(mkt.dir>0?' ▲':' ▼'):'')+'</button></th>';}).join('');
+  var set=holdSet();
+  var body=rows.map(function(r){
+    var c=cls(r.pct);
+    return '<tr'+(set[r.sym]?' class="hl"':'')+'><td><b>'+esc(r.sym)+'</b></td><td>'+fmt(r.price)+'</td><td class="'+c+'">'+fmt(r.chg)+'</td><td class="'+c+'">'+fmt(r.pct)+'%</td><td class="hide-sm">'+fmt(r.vol,0)+'</td><td class="hide-sm">'+fmt(r.high)+'</td><td class="hide-sm">'+fmt(r.low)+'</td></tr>';
+  }).join('');
+  $('#mtable').innerHTML='<table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table>';
+}
+
+/* ---------- Portfolio ---------- */
+function renderPortfolio(){
+  var prices={};marketRows().forEach(function(r){prices[r.sym]=r;});
+  var cost=0,value=0,dayPl=0,known=0;
+  PF.forEach(function(h){
+    var m=prices[h.sym];cost+=h.qty*h.avg;
+    if(m&&m.price!=null){value+=h.qty*m.price;known++;
+      if(m.chg!=null)dayPl+=h.qty*m.chg;}
+    else value+=h.qty*h.avg;
+  });
+  var pl=value-cost;
+  $('#pfsum').innerHTML=
+    '<div><small>Market value</small><b>'+fmt(value,0)+'</b></div>'+
+    '<div><small>Invested</small><b>'+fmt(cost,0)+'</b></div>'+
+    '<div><small>Unrealised P&amp;L</small><b class="'+cls(pl)+'">'+fmt(pl,0)+(cost?' ('+fmt(pl/cost*100)+'%)':'')+'</b></div>'+
+    '<div><small>Today</small><b class="'+cls(dayPl)+'">'+fmt(dayPl,0)+'</b></div>';
+  if(!PF.length){
+    $('#pftable').innerHTML='<p class="empty">No holdings yet. Add a symbol, quantity and average cost above.</p>';
+  }else{
+    var body=PF.map(function(h,i){
+      var m=prices[h.sym],last=m?m.price:null,val=last!=null?h.qty*last:null;
+      var p=val!=null?val-h.qty*h.avg:null,pp=p!=null&&h.avg?p/(h.qty*h.avg)*100:null;
+      var w=value&&val!=null?val/value*100:null;
+      return '<tr><td><b>'+esc(h.sym)+'</b></td><td>'+fmt(h.qty,0)+'</td><td class="hide-sm">'+fmt(h.avg)+'</td><td>'+fmt(last)+'</td><td>'+fmt(val,0)+'</td><td class="'+cls(p)+'">'+fmt(p,0)+'</td><td class="'+cls(pp)+'">'+fmt(pp)+'%</td><td class="hide-sm">'+fmt(w,1)+'%</td><td><button class="x" type="button" data-rm="'+i+'" aria-label="Remove '+esc(h.sym)+'">Remove</button></td></tr>';
+    }).join('');
+    $('#pftable').innerHTML='<table><thead><tr><th>Symbol</th><th>Qty</th><th class="hide-sm">Avg cost</th><th>Last</th><th>Value</th><th>P&amp;L</th><th>P&amp;L %</th><th class="hide-sm">Weight</th><th></th></tr></thead><tbody>'+body+'</tbody></table>';
+  }
+  if(!PF.length){
+    $('#pfdiv').innerHTML='<p class="empty">Add holdings to see related payouts.</p>';
+    $('#pfann').innerHTML='<p class="empty">Add holdings to see related announcements.</p>';
+  }else{
+    $('#pfdiv').innerHTML=pageHtml('payouts','',true);
+    $('#pfann').innerHTML=pageHtml('announcements','',true);
+  }
+}
+function addHolding(){
+  var sym=$('#pfs').value.trim().toUpperCase(),q=num($('#pfq').value),a=num($('#pfa').value);
+  if(!sym||!(q>0)||a==null||a<0){alert('Enter a symbol, a quantity above zero, and an average cost.');return;}
+  var ex=PF.filter(function(h){return h.sym===sym;})[0];
+  if(ex){var tq=ex.qty+q;ex.avg=(ex.qty*ex.avg+q*a)/tq;ex.qty=tq;}
+  else PF.push({sym:sym,qty:q,avg:a});
+  store.set(LS_PF,PF);
+  $('#pfs').value='';$('#pfq').value='';$('#pfa').value='';
+  renderAll();
+}
+
+/* ---------- other tabs ---------- */
+function renderDividends(){$('#dtable').innerHTML=pageHtml('payouts',$('#dq').value.trim(),false);}
+function renderAnnouncements(){$('#atable').innerHTML=pageHtml('announcements',$('#aq').value.trim(),false);}
+function renderData(){
+  var names=DATA&&DATA.pages?Object.keys(DATA.pages):[];
+  var sel=$('#dpage'),cur=sel.value;
+  sel.innerHTML=names.map(function(n){return '<option>'+esc(n)+'</option>';}).join('');
+  if(names.indexOf(cur)>=0)sel.value=cur;
+  if(!names.length){$('#dpout').innerHTML=noData('data');return;}
+  $('#dpout').innerHTML=pageHtml(sel.value,$('#dpq').value.trim(),false);
+}
+
+function renderStatus(){
+  var s=$('#status');
+  if(!DATA){s.textContent='No data loaded';return;}
+  var d=DATA.fetched_at?new Date(DATA.fetched_at):null;
+  s.textContent='Data fetched '+(d&&!isNaN(d)?d.toLocaleString():'at an unknown time')+' · delayed PSX portal data';
+}
+function renderAll(){cache.rows=null;renderStatus();renderMarket();renderPortfolio();renderDividends();renderAnnouncements();renderData();}
+
+/* ---------- loading ---------- */
+function setData(d,persist){
+  if(!d||!d.pages){alert('That file is not a data.json made by psx_fetch.py.');return;}
+  DATA=d;if(persist)store.set(LS_DATA,d);renderAll();
+}
+function loadFromServer(){
+  return fetch('data.json?'+Date.now()).then(function(r){if(!r.ok)throw new Error('no file');return r.json();}).then(function(d){setData(d,true);return true;}).catch(function(){return false;});
+}
+function readFile(file,cb){var fr=new FileReader();fr.onload=function(){try{cb(JSON.parse(fr.result));}catch(e){alert('Could not read that file as JSON.');}};fr.readAsText(file);}
+
+/* ---------- events ---------- */
+$('#tabs').addEventListener('click',function(e){
+  var b=e.target.closest('button[data-t]');if(!b)return;
+  document.querySelectorAll('#tabs button').forEach(function(x){x.setAttribute('aria-selected',x===b?'true':'false');});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='p-'+b.dataset.t);});
+});
+$('#file').addEventListener('change',function(e){if(e.target.files[0])readFile(e.target.files[0],function(d){setData(d,true);});e.target.value='';});
+$('#reload').addEventListener('click',function(){loadFromServer().then(function(ok){if(!ok)alert('Could not reload data.json automatically. Open this page through a local server (python -m http.server) or use Choose data.json.');});});
+$('#mq').addEventListener('input',function(e){mkt.q=e.target.value.trim();updateMarketTable();});
+$('#msec').addEventListener('change',function(e){mkt.sector=e.target.value;updateMarketTable();});
+$('#mmode').addEventListener('click',function(e){
+  var b=e.target.closest('button[data-m]');if(!b)return;mkt.mode=b.dataset.m;
+  document.querySelectorAll('#mmode button').forEach(function(x){x.classList.toggle('on',x===b);});updateMarketTable();
+});
+$('#mtable').addEventListener('click',function(e){
+  var b=e.target.closest('button[data-k]');if(!b)return;
+  var k=b.dataset.k;mkt.mode='all';
+  document.querySelectorAll('#mmode button').forEach(function(x){x.classList.toggle('on',x.dataset.m==='all');});
+  if(mkt.sort===k)mkt.dir*=-1;else{mkt.sort=k;mkt.dir=(k==='sym')?1:-1;}
+  updateMarketTable();
+});
+$('#pfadd').addEventListener('click',addHolding);
+$('#pftable').addEventListener('click',function(e){
+  var b=e.target.closest('button[data-rm]');if(!b)return;
+  var h=PF[+b.dataset.rm];if(h&&confirm('Remove '+h.sym+' from your portfolio?')){PF.splice(+b.dataset.rm,1);store.set(LS_PF,PF);renderAll();}
+});
+$('#pfexp').addEventListener('click',function(){
+  var blob=new Blob([JSON.stringify({portfolio:PF},null,2)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='psx-portfolio-backup.json';document.body.appendChild(a);a.click();a.remove();
+});
+$('#pfimp').addEventListener('change',function(e){
+  if(e.target.files[0])readFile(e.target.files[0],function(d){
+    if(!d||!Array.isArray(d.portfolio)){alert('That file is not a portfolio backup.');return;}
+    PF=d.portfolio.filter(function(h){return h&&h.sym&&h.qty>0;}).map(function(h){return {sym:String(h.sym).toUpperCase(),qty:+h.qty,avg:+h.avg||0};});
+    store.set(LS_PF,PF);renderAll();
+  });
+  e.target.value='';
+});
+$('#dq').addEventListener('input',renderDividends);
+$('#aq').addEventListener('input',renderAnnouncements);
+$('#dpage').addEventListener('change',renderData);
+$('#dpq').addEventListener('input',renderData);
+
+/* ---------- start ---------- */
+var cached=store.get(LS_DATA);
+if(cached&&cached.pages)DATA=cached;
+renderAll();
+loadFromServer();
+if(/^https?:/.test(location.protocol)){setInterval(function(){if(!document.hidden)loadFromServer();},300000);}
+})();
+</script>
+</body>
+</html>
